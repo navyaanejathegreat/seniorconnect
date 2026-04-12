@@ -94,8 +94,9 @@
         const data = await res.json();
         if (data.message === "Login successful") {
             localStorage.setItem("role", data.role);
-            localStorage.setItem("name", data.name);
+            localStorage.setItem("name", data.email);
             localStorage.setItem("userId", data.id);
+            localStorage.setItem("token", data.token);
             window.location.href = "/dashboard.html";
         } else {
             document.getElementById("message").innerText = data.message || "Login failed.";

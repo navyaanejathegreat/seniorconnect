@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Profile</title>
+</head>
+<body>
+
+<h2>Create Your Profile</h2>
+
+<input id="company" placeholder="Company"><br><br>
+<input id="role" placeholder="Role"><br><br>
+<input id="domain" placeholder="Domain (e.g. Backend)"><br><br>
+<input id="cgpa" placeholder="CGPA"><br><br>
+<input id="branch" placeholder="Branch"><br><br>
+<input id="placementYear" placeholder="Placement Year"><br><br>
+<textarea id="bio" placeholder="Short Bio"></textarea><br><br>
+
+<button onclick="createProfile()">Submit</button>
+
+<script>
+    const BASE = window.location.origin;
+
+    async function createProfile() {
+        const body = {
+            email: localStorage.getItem("email"), // IMPORTANT
+            company: document.getElementById("company").value,
+            role: document.getElementById("role").value,
+            domain: document.getElementById("domain").value,
+            cgpa: document.getElementById("cgpa").value,
+            branch: document.getElementById("branch").value,
+            placementYear: document.getElementById("placementYear").value,
+            bio: document.getElementById("bio").value
+        };
+
+        const res = await fetch(`${BASE}/api/profiles`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            alert("Profile created!");
+            window.location.href = "/dashboard.html";
+        } else {
+            alert("Error creating profile");
+        }
+    }
+</script>
+
+</body>
+</html>

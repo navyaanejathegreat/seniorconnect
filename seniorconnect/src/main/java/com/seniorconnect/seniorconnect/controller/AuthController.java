@@ -43,11 +43,15 @@ public class AuthController {
         if (!passwordEncoder.matches(req.get("password"), user.getPasswordHash()))
             return ResponseEntity.status(401).body("Wrong password");
 
+        String token = java.util.UUID.randomUUID().toString();
+
         return ResponseEntity.ok(Map.of(
                 "message", "Login successful",
                 "role", user.getRole(),
                 "name", user.getName(),
-                "id", user.getId()
+                "id", user.getId(),
+                "token", token
+                "email", user.getEmail(),
         ));
     }
 }
