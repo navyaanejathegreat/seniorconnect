@@ -3,50 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Inbox - SeniorConnect</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+    <link rel="stylesheet" href="/style.css">
 
-        .navbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .navbar h1 { color: #1a73e8; font-size: 20px; cursor: pointer; }
+    <script>
+        if (localStorage.getItem("mode") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
 
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
-        .subtitle { color: #666; margin-bottom: 28px; font-size: 14px; }
-
-        .request-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; }
-        .request-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .request-header h3 { font-size: 16px; color: #1a1a2e; }
-        .status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status.PENDING { background: #fff3cd; color: #856404; }
-        .status.ACCEPTED { background: #d4edda; color: #155724; }
-        .status.REJECTED { background: #f8d7da; color: #721c24; }
-
-        .message { font-size: 14px; color: #555; margin-bottom: 16px; line-height: 1.5; background: #f8f9fa; padding: 12px; border-radius: 8px; }
-
-        .actions { display: flex; gap: 12px; }
-        .accept-btn { background: #34a853; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .accept-btn:hover { background: #2d9248; }
-        .reject-btn { background: white; color: #dc3545; border: 1px solid #dc3545; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .reject-btn:hover { background: #f8d7da; }
-
-        .empty { text-align: center; color: #aaa; padding: 60px; font-size: 14px; background: white; border-radius: 12px; }
-    </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-    <h1 onclick="window.location.href='/dashboard.html'">SeniorConnect</h1>
-    <span id="username" style="color:#555; font-size:14px;"></span>
-</nav>
+<!-- HEADER -->
+<div class="header">
+    <div class="logo" onclick="window.location.href='/dashboard.html'">
+        SeniorConnect
+    </div>
 
-<div class="container">
-    <h2>Your Inbox</h2>
-    <p class="subtitle">Mentorship requests from juniors.</p>
+    <div class="right">
+        <div class="user-info">
+            <div class="name" id="username"></div>
+            <div class="role">SENIOR</div>
+        </div>
 
-    <div id="inbox-list">
+        <button class="btn profile" onclick="window.location.href='/profile.html'">
+            Profile
+        </button>
+
+        <button class="btn logout" onclick="logout()">
+            Logout
+        </button>
+
+        <span class="toggle" onclick="toggleMode()">🌙</span>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="welcome">
+        <h2>Your Inbox</h2>
+        <p>Mentorship requests from juniors</p>
+    </div>
+
+    <div id="inbox-list" class="forum-list">
         <div class="empty">Loading requests...</div>
     </div>
+
 </div>
 
 <script>
@@ -55,56 +59,79 @@
     const name = localStorage.getItem("name");
 
     if (!seniorId) window.location.href = "/index.html";
-
     document.getElementById("username").innerText = name;
 
+    /* LOAD REQUESTS */
     async function loadRequests() {
-        const response = await fetch(`${BASE}/api/mentorship/received/${seniorId}`);
-        const requests = await response.json();
+        const res = await fetch(`${BASE}/api/mentorship/received/${seniorId}`);
+        const data = await res.json();
 
-        const list = document.getElementById("inbox-list");
+        const container = document.getElementById("inbox-list");
 
-        if (requests.length === 0) {
-            list.innerHTML = '<div class="empty">No mentorship requests yet.</div>';
+        if (!data.length) {
+            container.innerHTML = `<div class="empty">No requests yet</div>`;
             return;
         }
 
-        list.innerHTML = "";
-        requests.forEach(req => {
+        container.innerHTML = "";
+
+        data.forEach(req => {
             const card = document.createElement("div");
-            card.className = "request-card";
-            card.id = "card-" + req.id;
+            card.className = "card";
+
             card.innerHTML = `
-                <div class="request-header">
-                    <h3>From: ${req.junior.name}</h3>
-                    <span class="status ${req.status}">${req.status}</span>
-                </div>
-                <div class="message">"${req.message}"</div>
-                ${req.status === "PENDING" ? `
+            <div class="card-title">From: ${req.junior.name}</div>
+            <div class="card-sub">${req.status}</div>
+
+            <p>${req.message}</p>
+
+            ${
+                req.status === "PENDING"
+                    ? `
                 <div class="actions">
-                    <button class="accept-btn" onclick="respond(${req.id}, 'ACCEPTED')">Accept</button>
-                    <button class="reject-btn" onclick="respond(${req.id}, 'REJECTED')">Reject</button>
-                </div>` : ""}
-            `;
-            list.appendChild(card);
+                    <button class="btn primary" onclick="respond(${req.id}, 'ACCEPTED')">
+                        Accept
+                    </button>
+                    <button class="btn" onclick="respond(${req.id}, 'REJECTED')">
+                        Reject
+                    </button>
+                </div>
+                `
+                    : ""
+            }
+        `;
+
+            container.appendChild(card);
         });
     }
 
-    async function respond(requestId, status) {
-        const response = await fetch(`${BASE}/api/mentorship/respond/${requestId}?status=${status}`, {
+    /* RESPOND */
+    async function respond(id, status) {
+        const res = await fetch(`${BASE}/api/mentorship/respond/${id}?status=${status}`, {
             method: "PUT"
         });
 
-        if (response.ok) {
-            // Update the card without reloading the page
-            const card = document.getElementById("card-" + requestId);
-            card.querySelector(".status").className = "status " + status;
-            card.querySelector(".status").innerText = status;
-            const actions = card.querySelector(".actions");
-            if (actions) actions.remove();
+        if (res.ok) {
+            loadRequests();
         } else {
-            alert("Something went wrong. Please try again.");
+            alert("Something went wrong");
         }
+    }
+
+    /* DARK MODE */
+    function toggleMode() {
+        document.documentElement.classList.toggle("dark");
+
+        localStorage.setItem(
+            "mode",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+        );
+    }
+
+    /* LOGOUT */
+    function logout(){
+        localStorage.clear();
+        window.location.href = "/index.html";
     }
 
     loadRequests();

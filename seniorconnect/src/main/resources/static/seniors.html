@@ -3,63 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Find a Senior - SeniorConnect</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; }
-
-        .navbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .navbar h1 { color: #1a73e8; font-size: 20px; cursor: pointer; }
-
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
-        .subtitle { color: #666; margin-bottom: 28px; font-size: 14px; }
-
-        .filters { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
-        .filters input { padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; flex: 1; min-width: 150px; }
-        .filters input:focus { outline: none; border-color: #1a73e8; }
-        .filter-btn { padding: 10px 20px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .filter-btn:hover { background: #1558b0; }
-        .clear-btn { padding: 10px 20px; background: white; color: #555; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .clear-btn:hover { background: #f5f5f5; }
-
-        .senior-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-
-        .senior-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s; }
-        .senior-card:hover { transform: translateY(-4px); }
-        .senior-name { font-size: 18px; font-weight: bold; color: #1a1a2e; margin-bottom: 4px; }
-        .senior-company { font-size: 14px; color: #1a73e8; margin-bottom: 12px; font-weight: 500; }
-        .tag { display: inline-block; background: #f0f2f5; color: #555; padding: 4px 10px; border-radius: 20px; font-size: 12px; margin: 3px 2px; }
-        .bio { font-size: 13px; color: #777; margin-top: 12px; line-height: 1.5; }
-        .cgpa { font-size: 13px; color: #34a853; font-weight: bold; margin-top: 8px; }
-        .request-btn { margin-top: 16px; width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .request-btn:hover { background: #1558b0; }
-
-        .empty { text-align: center; color: #aaa; padding: 60px; font-size: 14px; background: white; border-radius: 12px; }
-        .count { font-size: 13px; color: #888; margin-bottom: 16px; }
-    </style>
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        if (localStorage.getItem("mode") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
 </head>
+<script>
+    // Apply saved mode BEFORE rendering (no flicker)
+    if (localStorage.getItem("mode") === "dark") {
+        document.documentElement.classList.add("dark");
+    }
+</script>
 <body>
 
-<nav class="navbar">
-    <h1 onclick="window.location.href='/dashboard.html'">SeniorConnect</h1>
-    <span id="username" style="color:#555; font-size:14px;"></span>
-</nav>
 
-<div class="container">
-    <h2>Find a Senior</h2>
-    <p class="subtitle">Browse placed seniors and connect with the right mentor for you.</p>
+<!-- HEADER -->
+<div class="header">
+    <div class="logo" onclick="window.location.href='/dashboard.html'">
+        SeniorConnect
+    </div>
 
+    <div class="right">
+        <div class="user-info">
+            <div class="name" id="username">User</div>
+            <div class="role">SENIOR</div>
+        </div>
+
+        <button class="btn profile" onclick="window.location.href='/profile.html'">
+            Profile
+        </button>
+
+        <button class="btn logout" onclick="logout()">
+            Logout
+        </button>
+
+        <span class="toggle" onclick="toggleMode()">🌙</span>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="welcome">
+        <h2>Find a Senior</h2>
+        <p>Browse placed seniors and connect with the right mentor.</p>
+    </div>
+
+    <!-- FILTERS -->
     <div class="filters">
-        <input type="text" id="filter-company" placeholder="Filter by company (e.g. Google)" />
-        <input type="text" id="filter-domain" placeholder="Filter by domain (e.g. Backend)" />
-        <button class="filter-btn" onclick="applyFilters()">Search</button>
-        <button class="clear-btn" onclick="clearFilters()">Clear</button>
+        <input id="filter-company" placeholder="Company (e.g. Google)">
+        <input id="filter-domain" placeholder="Domain (e.g. Backend)">
+        <button class="btn primary" onclick="applyFilters()">Search</button>
+        <button class="btn" onclick="clearFilters()">Clear</button>
     </div>
 
     <div class="count" id="result-count"></div>
-    <div class="senior-grid" id="senior-grid">
+
+    <!-- GRID -->
+    <div class="grid" id="senior-grid">
         <div class="empty">Loading seniors...</div>
     </div>
+
 </div>
 
 <script>
@@ -68,70 +74,86 @@
     if (!name) window.location.href = "/index.html";
     document.getElementById("username").innerText = name;
 
-    async function loadSeniors(company = "", domain = "") {
-        let url = `${BASE}/api/profiles`;
-
+    /* LOAD SENIORS */
+    async function loadSeniors(company="", domain="") {
+        let url = `${BASE}/api/profiles?`;
         if (company) url += `company=${encodeURIComponent(company)}&`;
         if (domain) url += `domain=${encodeURIComponent(domain)}`;
-        if (!company && !domain) {
-            url = `${BASE}/api/profiles`;
-        }
 
-        const response = await fetch(url);
-        const seniors = await response.json();
+        const res = await fetch(url);
+        const seniors = await res.json();
 
         const grid = document.getElementById("senior-grid");
         const count = document.getElementById("result-count");
 
-        if (seniors.length === 0) {
-            grid.innerHTML = '<div class="empty">No seniors found matching your search.</div>';
+        if (!seniors.length) {
+            grid.innerHTML = `<div class="empty">No seniors found</div>`;
             count.innerText = "";
             return;
         }
 
-        count.innerText = `${seniors.length} senior${seniors.length > 1 ? "s" : ""} found`;
+        count.innerText = `${seniors.length} senior${seniors.length>1?"s":""} found`;
         grid.innerHTML = "";
 
-        seniors.forEach(senior => {
+        seniors.forEach(s => {
             const card = document.createElement("div");
-            card.className = "senior-card";
+            card.className = "card";
+
             card.innerHTML = `
-                <div class="senior-name">${senior.user.name}</div>
-                <div class="senior-company">🏢 ${senior.company} · ${senior.role}</div>
-                <div>
-                    <span class="tag">📚 ${senior.domain}</span>
-                    <span class="tag">🎓 ${senior.branch}</span>
-                    <span class="tag">📅 ${senior.placementYear}</span>
-                </div>
-                <div class="cgpa">CGPA: ${senior.cgpa}</div>
-                <div class="bio">${senior.bio || ""}</div>
-                <button class="request-btn" onclick="window.location.href='/mentor.html'">
-                    Request Mentorship
-                </button>
-            `;
+            <div class="card-title">${s.user.name}</div>
+            <div class="card-sub">${s.company} · ${s.role}</div>
+
+            <div class="tags">
+                <span>${s.domain}</span>
+                <span>${s.branch}</span>
+                <span>${s.placementYear}</span>
+            </div>
+
+            <div class="cgpa">CGPA: ${s.cgpa}</div>
+
+            <p class="bio">${s.bio || ""}</p>
+
+            <button class="btn primary full"
+                onclick="window.location.href='/mentor.html'">
+                Request Mentorship
+            </button>
+        `;
+
             grid.appendChild(card);
         });
     }
 
-    function applyFilters() {
-        const company = document.getElementById("filter-company").value.trim();
-        const domain = document.getElementById("filter-domain").value.trim();
-        loadSeniors(company, domain);
+    function applyFilters(){
+        loadSeniors(
+            document.getElementById("filter-company").value,
+            document.getElementById("filter-domain").value
+        );
     }
 
-    function clearFilters() {
-        document.getElementById("filter-company").value = "";
-        document.getElementById("filter-domain").value = "";
+    function clearFilters(){
+        document.getElementById("filter-company").value="";
+        document.getElementById("filter-domain").value="";
         loadSeniors();
     }
 
-    // Also allow pressing Enter to search
-    document.getElementById("filter-company").addEventListener("keypress", e => {
-        if (e.key === "Enter") applyFilters();
-    });
-    document.getElementById("filter-domain").addEventListener("keypress", e => {
-        if (e.key === "Enter") applyFilters();
-    });
+    /* DARK MODE */
+    function toggleMode() {
+        document.documentElement.classList.toggle("dark");
+
+        localStorage.setItem(
+            "mode",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+        );
+    }
+
+    if(localStorage.getItem("mode")==="dark"){
+        document.body.classList.add("dark");
+    }
+
+    function logout(){
+        localStorage.clear();
+        window.location.href="/index.html";
+    }
 
     loadSeniors();
 </script>

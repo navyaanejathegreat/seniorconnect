@@ -2,62 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Request a Mentor - SeniorConnect</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+    <title>Request Mentor - SeniorConnect</title>
+    <link rel="stylesheet" href="/style.css">
 
-        .navbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .navbar h1 { color: #1a73e8; font-size: 20px; cursor: pointer; }
+    <script>
+        if (localStorage.getItem("mode") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
 
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
-        .subtitle { color: #666; margin-bottom: 28px; font-size: 14px; }
-
-        .senior-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
-
-        .senior-card { background: white; border-radius: 12px; padding: 20px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
-        .senior-info h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 4px; }
-        .senior-info p { font-size: 13px; color: #888; }
-        .select-btn { background: #1a73e8; color: white; border: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .select-btn:hover { background: #1558b0; }
-        .select-btn.selected { background: #34a853; }
-
-        .request-form { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: none; }
-        .request-form h3 { font-size: 18px; color: #1a1a2e; margin-bottom: 16px; }
-        textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 120px; font-family: Arial, sans-serif; }
-        textarea:focus { outline: none; border-color: #1a73e8; }
-        .send-btn { margin-top: 16px; background: #1a73e8; color: white; border: none; padding: 12px 28px; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%; }
-        .send-btn:hover { background: #1558b0; }
-
-        .success-msg { display: none; text-align: center; padding: 20px; color: #34a853; font-size: 16px; font-weight: bold; }
-        .empty { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
-    </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-    <h1 onclick="window.location.href='/dashboard.html'">SeniorConnect</h1>
-    <span id="username" style="color:#555; font-size:14px;"></span>
-</nav>
+<!-- HEADER -->
+<div class="header">
+    <div class="logo" onclick="window.location.href='/dashboard.html'">
+        SeniorConnect
+    </div>
 
-<div class="container">
-    <h2>Request a Mentor</h2>
-    <p class="subtitle">Choose a senior you'd like to connect with, then send them a message.</p>
+    <div class="right">
+        <div class="user-info">
+            <div class="name" id="username"></div>
+            <div class="role">JUNIOR</div>
+        </div>
 
-    <div class="senior-list" id="senior-list">
+        <button class="btn profile" onclick="window.location.href='/profile.html'">
+            Profile
+        </button>
+
+        <button class="btn logout" onclick="logout()">
+            Logout
+        </button>
+
+        <span class="toggle" onclick="toggleMode()">🌙</span>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="welcome">
+        <h2>Request a Mentor</h2>
+        <p>Select a senior and send a mentorship request</p>
+    </div>
+
+    <!-- SENIOR LIST -->
+    <div id="senior-list" class="forum-list">
         <div class="empty">Loading seniors...</div>
     </div>
 
-    <div class="request-form" id="request-form">
-        <h3 id="form-title">Send a request to ...</h3>
-        <textarea id="message" placeholder="Introduce yourself and explain what kind of guidance you're looking for..."></textarea>
-        <button class="send-btn" onclick="sendRequest()">Send Request</button>
+    <!-- REQUEST FORM -->
+    <div class="ask-box" id="request-form" style="display:none;">
+        <h3 id="form-title"></h3>
+        <textarea id="message" placeholder="Write your message..."></textarea>
+        <button class="btn primary">Select</button>
     </div>
 
-    <div class="success-msg" id="success-msg">
-        ✅ Your mentorship request has been sent!
+    <!-- SUCCESS -->
+    <div id="success-msg" class="empty" style="display:none;">
+        ✅ Request sent successfully
     </div>
+
 </div>
 
 <script>
@@ -66,88 +72,90 @@
     const name = localStorage.getItem("name");
 
     if (!juniorId) window.location.href = "/index.html";
-
     document.getElementById("username").innerText = name;
 
     let selectedSeniorId = null;
 
-    // Load all seniors from backend
+    /* LOAD SENIORS */
     async function loadSeniors() {
-        const response = await fetch(`${BASE}/api/profiles`);
-        const seniors = await response.json();
+        const res = await fetch(`${BASE}/api/profiles`);
+        const seniors = await res.json();
 
         const list = document.getElementById("senior-list");
 
-        if (seniors.length === 0) {
-            list.innerHTML = '<div class="empty">No seniors have created profiles yet.</div>';
+        if (!seniors.length) {
+            list.innerHTML = `<div class="empty">No seniors available</div>`;
             return;
         }
 
         list.innerHTML = "";
-        seniors.forEach(senior => {
+
+        seniors.forEach(s => {
             const card = document.createElement("div");
-            card.className = "senior-card";
+            card.className = "card";
+
             card.innerHTML = `
-                <div class="senior-info">
-                    <h3>${senior.user.name}</h3>
-                    <p>${senior.company} · ${senior.domain}</p>
-                </div>
-                <button class="select-btn" id="btn-${senior.user.id}" onclick="selectSenior(${senior.user.id}, '${senior.user.name}')">
-                    Select
-                </button>
-            `;
+            <div class="card-title">${s.user.name}</div>
+            <div class="card-sub">${s.company} · ${s.domain}</div>
+
+            <button class="btn" onclick="selectSenior(${s.user.id}, '${s.user.name}')">
+                Select
+            </button>
+        `;
+
             list.appendChild(card);
         });
     }
 
-    function selectSenior(seniorId, seniorName) {
-        // Reset all buttons
-        document.querySelectorAll(".select-btn").forEach(btn => {
-            btn.classList.remove("selected");
-            btn.innerText = "Select";
-        });
+    /* SELECT */
+    function selectSenior(id, name) {
+        selectedSeniorId = id;
 
-        selectedSeniorId = seniorId;
+        document.getElementById("form-title").innerText =
+            "Send request to " + name;
 
-        // Highlight selected
-        const btn = document.getElementById("btn-" + seniorId);
-        btn.classList.add("selected");
-        btn.innerText = "Selected ✓";
-
-        // Show the message form
-        document.getElementById("form-title").innerText = "Send a request to " + seniorName;
         document.getElementById("request-form").style.display = "block";
         document.getElementById("request-form").scrollIntoView({ behavior: "smooth" });
     }
 
+    /* SEND */
     async function sendRequest() {
         const message = document.getElementById("message").value.trim();
 
-        if (!message) {
-            alert("Please write a message before sending.");
-            return;
-        }
-        if (!selectedSeniorId) {
-            alert("Please select a senior first.");
-            return;
-        }
+        if (!message) return alert("Write a message");
 
-        const response = await fetch(`${BASE}/api/profiles`, {
+        const res = await fetch(`${BASE}/api/mentorship/request`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 juniorId: parseInt(juniorId),
                 seniorId: selectedSeniorId,
-                message: message
+                message
             })
         });
 
-        if (response.ok) {
+        if (res.ok) {
             document.getElementById("request-form").style.display = "none";
             document.getElementById("success-msg").style.display = "block";
         } else {
-            alert("Something went wrong. Please try again.");
+            alert("Something went wrong");
         }
+    }
+
+    /* DARK MODE */
+    function toggleMode() {
+        document.documentElement.classList.toggle("dark");
+
+        localStorage.setItem(
+            "mode",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+        );
+    }
+
+    /* LOGOUT */
+    function logout(){
+        localStorage.clear();
+        window.location.href = "/index.html";
     }
 
     loadSeniors();

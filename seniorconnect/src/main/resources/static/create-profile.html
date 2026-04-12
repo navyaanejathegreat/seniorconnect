@@ -3,45 +3,73 @@
 <head>
     <title>Create Profile</title>
     <link rel="stylesheet" href="/style.css">
+
+    <script>
+        if (localStorage.getItem("mode") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
 </head>
-<div class="toggle" onclick="toggleMode()">🌙 Toggle</div>
+
 <body>
+
+<!-- HEADER -->
 <div class="header">
-    <div class="logo">SeniorConnect</div>
+    <div class="logo" onclick="window.location.href='/dashboard.html'">
+        SeniorConnect
+    </div>
 
     <div class="right">
         <div class="user-info">
-            <span class="name" id="username"></span>
-            <span class="role" id="role"></span>
+            <div class="name" id="username"></div>
+            <div class="role">SENIOR</div>
         </div>
 
-        <button class="logout" onclick="logout()">Logout</button>
-        <div class="toggle" onclick="toggleMode()">☾</div>
+        <button class="btn profile" onclick="window.location.href='/profile.html'">
+            Profile
+        </button>
+
+        <button class="btn logout" onclick="logout()">
+            Logout
+        </button>
+
+        <span class="toggle" onclick="toggleMode()">🌙</span>
     </div>
 </div>
 
-<div class="container">
-    <h2>Create Your Profile</h2>
+<!-- MAIN -->
+<div class="main">
 
-    <input id="company" placeholder="Company">
-    <input id="role" placeholder="Role">
-    <input id="domain" placeholder="Domain (e.g. Backend)">
-    <input id="cgpa" placeholder="CGPA">
-    <input id="branch" placeholder="Branch">
-    <input id="placementYear" placeholder="Placement Year">
-    <textarea id="bio" placeholder="Short Bio"></textarea>
+    <div class="form-card">
+        <h2>Create Your Profile</h2>
 
-    <button onclick="createProfile()">Create Profile</button>
+        <input id="company" placeholder="Company">
+        <input id="roleInput" placeholder="Role (e.g. Software Engineer)">
+        <input id="domain" placeholder="Domain (e.g. Backend)">
+        <input id="cgpa" placeholder="CGPA">
+        <input id="branch" placeholder="Branch">
+        <input id="placementYear" placeholder="Placement Year">
+        <textarea id="bio" placeholder="Short Bio"></textarea>
+
+        <button class="btn primary full" onclick="createProfile()">
+            Save Profile
+        </button>
+    </div>
+
 </div>
 
 <script>
     const BASE = window.location.origin;
+    const name = localStorage.getItem("name");
+
+    if (!name) window.location.href = "/index.html";
+    document.getElementById("username").innerText = name;
 
     async function createProfile() {
         const body = {
             email: localStorage.getItem("email"),
             company: document.getElementById("company").value,
-            role: document.getElementById("role").value,
+            role: document.getElementById("roleInput").value,
             domain: document.getElementById("domain").value,
             cgpa: document.getElementById("cgpa").value,
             branch: document.getElementById("branch").value,
@@ -56,19 +84,23 @@
         });
 
         if (res.ok) {
-            alert("Profile created!");
             window.location.href = "/dashboard.html";
         } else {
             alert("Something went wrong");
         }
     }
+
     function toggleMode() {
-        document.body.classList.toggle("dark");
-        localStorage.setItem("theme", document.body.classList.contains("dark"));
+        document.documentElement.classList.toggle("dark");
+        localStorage.setItem(
+            "mode",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+        );
     }
 
-    if (localStorage.getItem("theme") === "true") {
-        document.body.classList.add("dark");
+    function logout() {
+        localStorage.clear();
+        window.location.href = "/index.html";
     }
 </script>
 

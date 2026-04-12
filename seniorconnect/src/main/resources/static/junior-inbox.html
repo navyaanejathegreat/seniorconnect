@@ -1,38 +1,119 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>My Mentors - SeniorConnect</title>
+    <link rel="stylesheet" href="/style.css">
+
+    <script>
+        if (localStorage.getItem("mode") === "dark") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+</head>
+
 <body>
 
-<h2>Your Mentors</h2>
-<div id="list"></div>
+<!-- HEADER -->
+<div class="header">
+    <div class="logo" onclick="window.location.href='/dashboard.html'">
+        SeniorConnect
+    </div>
+
+    <div class="right">
+        <div class="user-info">
+            <div class="name" id="username"></div>
+            <div class="role">JUNIOR</div>
+        </div>
+
+        <button class="btn profile" onclick="window.location.href='/profile.html'">
+            Profile
+        </button>
+
+        <button class="btn logout" onclick="logout()">
+            Logout
+        </button>
+
+        <span class="toggle" onclick="toggleMode()">🌙</span>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="welcome">
+        <h2>Your Mentors</h2>
+        <p>Connect with seniors who accepted your request</p>
+    </div>
+
+    <div id="mentor-list" class="forum-list">
+        <div class="empty">Loading mentors...</div>
+    </div>
+
+</div>
 
 <script>
     const BASE = window.location.origin;
     const userId = localStorage.getItem("userId");
+    const name = localStorage.getItem("name");
 
-    async function load() {
+    if (!userId) window.location.href = "/index.html";
+    document.getElementById("username").innerText = name;
+
+    /* LOAD MENTORS */
+    async function loadMentors() {
         const res = await fetch(`${BASE}/api/mentorship/accepted/${userId}`);
         const data = await res.json();
 
-        const list = document.getElementById("list");
+        const list = document.getElementById("mentor-list");
 
-        if (data.length === 0) {
-            list.innerHTML = "<p>No mentors yet</p>";
+        if (!data.length) {
+            list.innerHTML = `<div class="empty">No mentors yet</div>`;
             return;
         }
 
-        list.innerHTML = data.map(r => `
-        <div style="margin-bottom:20px;">
-            <b>${r.senior.name}</b><br>
-            <button onclick="openChat(${r.senior.id})">Chat</button>
-        </div>
-    `).join("");
+        list.innerHTML = "";
+
+        data.forEach(r => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+            <div class="card-title">${r.senior.name}</div>
+            <div class="card-sub">Mentor</div>
+
+            <button class="btn primary full"
+                onclick="openChat(${r.senior.id})">
+                Chat
+            </button>
+        `;
+
+            list.appendChild(card);
+        });
     }
 
+    /* OPEN CHAT */
     function openChat(seniorId) {
-        window.location.href = `/chat.html?user=${seniorId}`;
-    }
+        window.location.href = \`/chat.html?user=\${seniorId}\`;
+}
 
-    load();
+/* DARK MODE */
+function toggleMode() {
+    document.documentElement.classList.toggle("dark");
+
+    localStorage.setItem(
+        "mode",
+        document.documentElement.classList.contains("dark") ? "dark" : "light"
+    );
+}
+
+/* LOGOUT */
+function logout(){
+    localStorage.clear();
+    window.location.href = "/index.html";
+}
+
+loadMentors();
 </script>
 
 </body>
