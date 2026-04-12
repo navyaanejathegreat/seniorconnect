@@ -1,5 +1,7 @@
 package com.seniorconnect.seniorconnect.controller;
 
+
+import java.util.HashMap;
 import com.seniorconnect.seniorconnect.model.SeniorProfile;
 import com.seniorconnect.seniorconnect.model.User;
 import com.seniorconnect.seniorconnect.repository.SeniorProfileRepository;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/profiles")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class SeniorProfileController {
 
@@ -50,5 +52,16 @@ public class SeniorProfileController {
             return ResponseEntity.ok(profileRepository.findByDomainContainingIgnoreCase(domain));
 
         return ResponseEntity.ok(profileRepository.findAll());
+    }
+    @GetMapping("/profile")
+    public Map<String, Object> getProfile() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", "hello");
+        data.put("role", "SENIOR");
+        data.put("company", "Google");
+        data.put("domain", "Backend");
+        data.put("branch", "Computer Science");
+        data.put("cgpa", 8.5);
+        return data;
     }
 }
