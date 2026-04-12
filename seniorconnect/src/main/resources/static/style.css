@@ -1,15 +1,6 @@
-/* ================= ROOT ================= */
-:root {
-    --bg: #e9eef5;
-    --card: #ffffff;
-    --text: #1f2937;
-    --border: #e5e7eb;
-    --primary: #3b82f6;
-    --muted: #6b7280;
-}
 
-/* ================= DARK MODE ================= */
-body.dark {
+/* ================= GLOBAL DARK THEME ================= */
+:root {
     --bg: #0b1220;
     --card: #111827;
     --text: #e5e7eb;
@@ -29,16 +20,12 @@ body {
 /* ================= HEADER ================= */
 .header {
     height: 64px;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
+    background: #0b1220 !important;
+    border-bottom: 1px solid #1f2937;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 60px;
-}
-
-body.dark .header {
-    background: #0f172a;
 }
 
 .logo {
@@ -88,7 +75,7 @@ body.dark .header {
 
 /* PROFILE */
 .btn.profile {
-    background: transparent;
+    border: 1px solid #334155;
 }
 
 /* LOGOUT */
@@ -102,7 +89,7 @@ body.dark .header {
     background: #dc2626;
 }
 
-/* PRIMARY (BLUE) */
+/* PRIMARY */
 .btn.primary {
     background: var(--primary);
     color: white;
@@ -113,7 +100,7 @@ body.dark .header {
     background: #2563eb;
 }
 
-/* FULL WIDTH */
+/* FULL */
 .btn.full {
     width: 100%;
     margin-top: 12px;
@@ -157,17 +144,19 @@ body.dark .header {
 
 /* ================= CARDS ================= */
 .card {
-    background: var(--card);
+    background: linear-gradient(145deg, #1a2a44, #142033);  /* richer blue */
+    border: 1px solid #22304a;
     padding: 20px;
     border-radius: 14px;
-    border: 1px solid var(--border);
     transition: 0.2s;
     position: relative;
+    color: #e5e7eb;
 }
 
 .card:hover {
     transform: translateY(-4px);
     border-color: var(--primary);
+    box-shadow: 0 10px 25px rgba(59,130,246,0.15);
 }
 
 /* Accent line */
@@ -182,16 +171,12 @@ body.dark .header {
     border-radius: 4px;
 }
 
-/* DARK CARD LOOK (clean, no ugly gradient mess) */
-body.dark .card {
-    background: #111827;
-    border: 1px solid #1f2937;
+.card-title {
+    color: #ffffff;
 }
 
-/* ================= CARD TEXT ================= */
-.card-title {
-    font-size: 18px;
-    font-weight: 600;
+.card p {
+    color: #9fb3c8;   /* soft but readable */
 }
 
 .card-sub {
@@ -200,14 +185,11 @@ body.dark .card {
     margin-bottom: 10px;
 }
 
-.card p {
-    color: var(--muted);
-    font-size: 14px;
-}
+
 
 /* ================= TAGS ================= */
 .tags span {
-    background: rgba(59,130,246,0.12);
+    background: rgba(59,130,246,0.15);
     color: var(--primary);
     padding: 4px 10px;
     border-radius: 999px;
@@ -224,15 +206,10 @@ body.dark .card {
 /* ================= INBOX ================= */
 .inbox {
     margin-top: 30px;
-    background: var(--card);
+    background: linear-gradient(145deg, #18263d, #131e30);
     padding: 25px;
     border-radius: 14px;
-    border: 1px solid var(--border);
-}
-
-body.dark .inbox {
-    background: #111827;
-    border: 1px solid #1f2937;
+    border: 1px solid #243047;
 }
 
 /* ================= FORMS ================= */
@@ -251,16 +228,9 @@ input, textarea {
     padding: 12px;
     margin-top: 12px;
     border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-}
-
-body.dark input,
-body.dark textarea {
-    background: #1f2937;
     border: 1px solid #374151;
-    color: #ffffff;
+    background: #1f2937;
+    color: white;
 }
 
 /* ================= ASK BOX ================= */
@@ -281,13 +251,9 @@ body.dark textarea {
 
 /* ================= ANSWERS ================= */
 .answer {
-    background: rgba(0,0,0,0.03);
+    background: rgba(255,255,255,0.05);
     padding: 8px 10px;
     border-radius: 8px;
-}
-
-body.dark .answer {
-    background: rgba(255,255,255,0.05);
 }
 
 /* ================= ACTIONS ================= */
@@ -295,36 +261,57 @@ body.dark .answer {
     display: flex;
     gap: 10px;
 }
+/* ================= FORCE DARK FIX ================= */
 
-/* ================= TOGGLE ================= */
-.toggle {
-    cursor: pointer;
+/* ALL CARDS */
+.card,
+.inbox,
+.form-card {
+    background: linear-gradient(145deg, #1a2a44, #142033) !important;
+    border: 1px solid #22304a !important;
+    color: #e5e7eb !important;
 }
-/* ===== FORCE FIX PROFILE BUTTON (DARK MODE) ===== */
-body.dark .btn.profile {
+
+/* CARD TEXT */
+.card-title,
+.inbox h2 {
+    color: #ffffff !important;
+}
+
+.card p,
+.inbox p {
+    color: #9fb3c8 !important;
+}
+
+/* PROFILE BUTTON FIX */
+.btn.profile {
     background: transparent !important;
     color: #e5e7eb !important;
     border: 1px solid #334155 !important;
 }
 
-body.dark .btn.profile:hover {
-    border-color: #3b82f6 !important;
-    color: #3b82f6 !important;
-}
-/* ===== BETTER DARK MODE CARDS (LIGHTER BLUE) ===== */
-
-body.dark .card {
-    background: linear-gradient(145deg, #1e2f4d, #16233a);
-    border: 1px solid #26324a;
+/* GENERAL BUTTON FIX */
+.btn {
+    background: transparent !important;
+    color: #e5e7eb !important;
+    border: 1px solid #334155 !important;
 }
 
-body.dark .card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 10px 25px rgba(59,130,246,0.15);
+/* LOGOUT (keep red) */
+.btn.logout {
+    background: #ef4444 !important;
+    color: white !important;
+    border: none !important;
 }
 
-/* Inbox too */
-body.dark .inbox {
-    background: linear-gradient(145deg, #1e2f4d, #16233a);
-    border: 1px solid #26324a;
+/* SELECT BUTTON (mentor page) */
+.select-btn {
+    background: #3b82f6 !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* REMOVE ANY WHITE BACKGROUND LEAK */
+* {
+    background-color: inherit;
 }

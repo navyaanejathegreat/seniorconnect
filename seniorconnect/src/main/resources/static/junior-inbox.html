@@ -97,15 +97,7 @@
         window.location.href = \`/chat.html?user=\${seniorId}\`;
 }
 
-/* DARK MODE */
-function toggleMode() {
-    document.documentElement.classList.toggle("dark");
 
-    localStorage.setItem(
-        "mode",
-        document.documentElement.classList.contains("dark") ? "dark" : "light"
-    );
-}
 
 /* LOGOUT */
 function logout(){

@@ -219,15 +219,7 @@
     document.getElementById("role").innerText = role;
     document.getElementById("welcomeText").innerText = "Welcome back, " + name + "!";
 
-    // DARK MODE
-    function toggleMode() {
-        document.documentElement.classList.toggle("dark");
 
-        localStorage.setItem(
-            "mode",
-            document.documentElement.classList.contains("dark") ? "dark" : "light"
-        );
-    }
 
     if (localStorage.getItem("theme") === "true") {
         document.body.classList.add("dark");

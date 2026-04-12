@@ -90,14 +90,7 @@
         }
     }
 
-    function toggleMode() {
-        document.documentElement.classList.toggle("dark");
-        localStorage.setItem(
-            "mode",
-            document.documentElement.classList.contains("dark") ? "dark" : "light"
-        );
-    }
-
+    
     function logout() {
         localStorage.clear();
         window.location.href = "/index.html";
