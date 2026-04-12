@@ -63,14 +63,19 @@
 </div>
 
 <script>
+    const BASE = window.location.origin;
     const name = localStorage.getItem("name");
     if (!name) window.location.href = "/index.html";
     document.getElementById("username").innerText = name;
 
     async function loadSeniors(company = "", domain = "") {
-        let url = "http://localhost:8080/api/profiles";
-        if (company) url += `?company=${encodeURIComponent(company)}`;
-        else if (domain) url += `?domain=${encodeURIComponent(domain)}`;
+        let url = `${BASE}/api/profiles`;
+
+        if (company) url += `company=${encodeURIComponent(company)}&`;
+        if (domain) url += `domain=${encodeURIComponent(domain)}`;
+        if (!company && !domain) {
+            url = `${BASE}/api/profiles`;
+        }
 
         const response = await fetch(url);
         const seniors = await response.json();
