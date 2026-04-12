@@ -1,0 +1,77 @@
+:root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #222;
+    --input: #ffffff;
+    --border: #ddd;
+    --primary: #2196F3;
+}
+
+body.dark {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text: #f1f1f1;
+    --input: #2a2a2a;
+    --border: #444;
+    --primary: #64b5f6;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+}
+
+/* Card */
+.container {
+    background: var(--card);
+    padding: 30px;
+    border-radius: 16px;
+    width: 420px;
+    margin: auto;
+    margin-top: 60px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Inputs */
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--input);
+    color: var(--text);
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Button */
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Toggle button */
+.toggle {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}

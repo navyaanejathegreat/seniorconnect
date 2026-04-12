@@ -2,27 +2,31 @@
 <html>
 <head>
     <title>Create Profile</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
+<div class="toggle" onclick="toggleMode()">🌙 Toggle</div>
 <body>
 
-<h2>Create Your Profile</h2>
+<div class="container">
+    <h2>Create Your Profile</h2>
 
-<input id="company" placeholder="Company"><br><br>
-<input id="role" placeholder="Role"><br><br>
-<input id="domain" placeholder="Domain (e.g. Backend)"><br><br>
-<input id="cgpa" placeholder="CGPA"><br><br>
-<input id="branch" placeholder="Branch"><br><br>
-<input id="placementYear" placeholder="Placement Year"><br><br>
-<textarea id="bio" placeholder="Short Bio"></textarea><br><br>
+    <input id="company" placeholder="Company">
+    <input id="role" placeholder="Role">
+    <input id="domain" placeholder="Domain (e.g. Backend)">
+    <input id="cgpa" placeholder="CGPA">
+    <input id="branch" placeholder="Branch">
+    <input id="placementYear" placeholder="Placement Year">
+    <textarea id="bio" placeholder="Short Bio"></textarea>
 
-<button onclick="createProfile()">Submit</button>
+    <button onclick="createProfile()">Create Profile</button>
+</div>
 
 <script>
     const BASE = window.location.origin;
 
     async function createProfile() {
         const body = {
-            email: localStorage.getItem("email"), // IMPORTANT
+            email: localStorage.getItem("email"),
             company: document.getElementById("company").value,
             role: document.getElementById("role").value,
             domain: document.getElementById("domain").value,
@@ -42,8 +46,16 @@
             alert("Profile created!");
             window.location.href = "/dashboard.html";
         } else {
-            alert("Error creating profile");
+            alert("Something went wrong");
         }
+    }
+    function toggleMode() {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("theme", document.body.classList.contains("dark"));
+    }
+
+    if (localStorage.getItem("theme") === "true") {
+        document.body.classList.add("dark");
     }
 </script>
 
