@@ -50,6 +50,7 @@
 </div>
 
 <script>
+    const BASE = window.location.origin;
     const seniorId = localStorage.getItem("userId");
     const name = localStorage.getItem("name");
 
@@ -58,7 +59,7 @@
     document.getElementById("username").innerText = name;
 
     async function loadRequests() {
-        const response = await fetch(`http://localhost:8080/api/mentorship/received/${seniorId}`);
+        const response = await fetch(`${BASE}/api/mentorship/received/${seniorId}`);
         const requests = await response.json();
 
         const list = document.getElementById("inbox-list");
@@ -90,7 +91,7 @@
     }
 
     async function respond(requestId, status) {
-        const response = await fetch(`http://localhost:8080/api/mentorship/respond/${requestId}?status=${status}`, {
+        const response = await fetch(`${BASE}/api/mentorship/respond/${requestId}?status=${status}`, {
             method: "PUT"
         });
 
