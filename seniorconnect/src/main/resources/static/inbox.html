@@ -100,7 +100,8 @@
             const card = document.getElementById("card-" + requestId);
             card.querySelector(".status").className = "status " + status;
             card.querySelector(".status").innerText = status;
-            card.querySelector(".actions").remove();
+            const actions = card.querySelector(".actions");
+            if (actions) actions.remove();
         } else {
             alert("Something went wrong. Please try again.");
         }
