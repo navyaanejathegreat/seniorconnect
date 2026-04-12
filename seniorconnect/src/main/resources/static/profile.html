@@ -2,132 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Profile - SeniorConnect</title>
-    <link rel="stylesheet" href="/style.css">
-    <script>
-        if (localStorage.getItem("mode") === "dark") {
-            document.documentElement.classList.add("dark");
-        }
-    </script>
+    <title>Profile - SeniorConnect</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <!-- HEADER -->
 <div class="header">
-    <div class="logo" onclick="window.location.href='/dashboard.html'">
-        SeniorConnect
-    </div>
+    <div class="logo">SeniorConnect</div>
 
     <div class="right">
         <div class="user-info">
-            <div class="name" id="username">User</div>
-            <div class="role">SENIOR</div>
+            <div class="name" id="nav-name">hello</div>
+            <div class="role" id="nav-role">SENIOR</div>
         </div>
 
-        <button class="btn profile active">
-            Profile
-        </button>
-
-        <button class="btn logout" onclick="logout()">
-            Logout
-        </button>
-
-        <span class="toggle" onclick="toggleMode()">🌙</span>
+        <button class="btn profile" onclick="location.href='profile.html'">Profile</button>
+        <button class="btn logout" onclick="logout()">Logout</button>
     </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-    <div class="profile-card">
+    <div class="profile-container">
+        <div class="profile-card">
 
-        <div class="profile-header">
-            <h2 id="name">Loading...</h2>
-            <p id="role">Software Engineer</p>
+            <!-- HEADER -->
+            <div class="profile-header">
+                <h2 id="name">Loading...</h2>
+                <p id="role">Role</p>
+            </div>
+
+            <!-- GRID -->
+            <div class="profile-grid">
+
+                <div>
+                    <span class="label">Company</span>
+                    <p id="company">-</p>
+                </div>
+
+                <div>
+                    <span class="label">Domain</span>
+                    <p id="domain">-</p>
+                </div>
+
+                <div>
+                    <span class="label">Branch</span>
+                    <p id="branch">-</p>
+                </div>
+
+                <div>
+                    <span class="label">CGPA</span>
+                    <p id="cgpa">-</p>
+                </div>
+
+                <div>
+                    <span class="label">Placement Year</span>
+                    <p id="year">-</p>
+                </div>
+
+            </div>
+
+            <!-- BIO -->
+            <div class="profile-bio">
+                <span class="label">Bio</span>
+                <p id="bio">-</p>
+            </div>
+
+            <!-- BUTTON -->
+            <button class="btn primary full" onclick="location.href='create-profile.html'">
+                Edit Profile
+            </button>
+
         </div>
-
-        <div class="profile-details">
-
-            <div class="row">
-                <span>Company</span>
-                <p id="company"></p>
-            </div>
-
-            <div class="row">
-                <span>Domain</span>
-                <p id="domain"></p>
-            </div>
-
-            <div class="row">
-                <span>Branch</span>
-                <p id="branch"></p>
-            </div>
-
-            <div class="row">
-                <span>CGPA</span>
-                <p id="cgpa"></p>
-            </div>
-
-            <div class="row">
-                <span>Placement Year</span>
-                <p id="year"></p>
-            </div>
-
-            <div class="row bio">
-                <span>Bio</span>
-                <p id="bio"></p>
-            </div>
-
-        </div>
-
-        <button class="btn primary full" onclick="window.location.href='/create-profile.html'">
-            Edit Profile
-        </button>
-
     </div>
 
 </div>
 
+<!-- SCRIPT -->
 <script>
-    const BASE = window.location.origin;
-    const name = localStorage.getItem("name");
 
-    if (!name) window.location.href = "/index.html";
-
-    document.getElementById("username").innerText = name;
-
-    /* LOAD PROFILE */
     async function loadProfile() {
-        const res = await fetch(`${window.location.origin}/api/profiles`);
-        const data = await res.json();
+        try {
+            const res = await fetch("/api/profile"); // backend endpoint
+            if (!res.ok) throw new Error("Failed to fetch");
 
-        const user = data[0]; // first profile
+            const data = await res.json();
 
-        document.getElementById("name").innerText = user.user.name;
-        document.getElementById("role").innerText = user.role;
+            // Navbar
+            document.getElementById("nav-name").innerText = data.name;
+            document.getElementById("nav-role").innerText = data.role;
 
-        document.getElementById("company").innerText = user.company;
-        document.getElementById("domain").innerText = user.domain;
-        document.getElementById("branch").innerText = user.branch;
-        document.getElementById("cgpa").innerText = user.cgpa;
-        document.getElementById("year").innerText = user.placementYear;
-        document.getElementById("bio").innerText = user.bio || "No bio";
+            // Profile
+            document.getElementById("name").innerText = data.name;
+            document.getElementById("role").innerText = data.role;
+            document.getElementById("company").innerText = data.company;
+            document.getElementById("domain").innerText = data.domain;
+            document.getElementById("branch").innerText = data.branch;
+            document.getElementById("cgpa").innerText = data.cgpa;
+            document.getElementById("year").innerText = data.placementYear;
+            document.getElementById("bio").innerText = data.bio;
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("name").innerText = "Failed to load profile";
+        }
     }
 
-
-
-    if (localStorage.getItem("mode") === "dark") {
-        document.documentElement.classList.add("dark");
-    }
-
-    /* LOGOUT */
     function logout() {
-        localStorage.clear();
-        window.location.href = "/index.html";
+        window.location.href = "index.html";
     }
 
     loadProfile();
+
 </script>
 
 </body>
