@@ -50,8 +50,8 @@ public class AuthController {
                 "role", user.getRole(),
                 "name", user.getName(),
                 "id", user.getId(),
-                "token", token
-                "email", user.getEmail(),
+                "token", token,
+                "email", user.getEmail()
         ));
     }
 }

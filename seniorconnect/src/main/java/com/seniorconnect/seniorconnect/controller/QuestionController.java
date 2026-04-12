@@ -1,8 +1,8 @@
 package com.seniorconnect.seniorconnect.controller;
+import com.seniorconnect.seniorconnect.repository.QuestionRepository;
 
 import com.seniorconnect.seniorconnect.model.Question;
 import com.seniorconnect.seniorconnect.model.User;
-import com.seniorconnect.seniorconnect.repository.QuestionRepository;
 import com.seniorconnect.seniorconnect.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

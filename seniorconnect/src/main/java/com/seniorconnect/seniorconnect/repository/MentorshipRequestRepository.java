@@ -8,4 +8,5 @@ import java.util.List;
 public interface MentorshipRequestRepository extends JpaRepository<MentorshipRequest, Long> {
     List<MentorshipRequest> findByJunior(User junior);
     List<MentorshipRequest> findBySenior(User senior);
+    List<MentorshipRequest> findByJuniorAndStatus(User junior, String status);
 }

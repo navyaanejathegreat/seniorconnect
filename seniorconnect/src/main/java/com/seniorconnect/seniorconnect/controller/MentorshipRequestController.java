@@ -60,4 +60,9 @@ public class MentorshipRequestController {
         mentorshipRequestRepository.save(request);
         return ResponseEntity.ok("Request " + status);
     }
+    @GetMapping("/accepted/{juniorId}")
+    public List<MentorshipRequest> getAccepted(@PathVariable Long juniorId) {
+        User junior = userRepository.findById(juniorId).orElse(null);
+        return mentorshipRequestRepository.findByJuniorAndStatus(junior, "ACCEPTED");
+    }
 }

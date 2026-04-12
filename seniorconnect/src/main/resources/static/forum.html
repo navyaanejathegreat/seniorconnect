@@ -4,114 +4,119 @@
     <meta charset="UTF-8">
     <title>Forum - SeniorConnect</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; }
-
-        .navbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .navbar h1 { color: #1a73e8; font-size: 20px; cursor: pointer; }
-
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
-        .subtitle { color: #666; margin-bottom: 28px; font-size: 14px; }
-
-        .ask-form { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 32px; }
-        .ask-form h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 16px; }
-        .ask-form input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
-        .ask-form input:focus { outline: none; border-color: #1a73e8; }
-        .ask-form textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 100px; font-family: Arial, sans-serif; }
-        .ask-form textarea:focus { outline: none; border-color: #1a73e8; }
-        .post-btn { margin-top: 12px; padding: 10px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .post-btn:hover { background: #1558b0; }
-
-        .questions-list { display: flex; flex-direction: column; gap: 16px; }
-        .question-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .question-title { font-size: 16px; font-weight: bold; color: #1a1a2e; margin-bottom: 8px; }
-        .question-body { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 12px; }
-        .question-meta { font-size: 12px; color: #aaa; }
-
-        .empty { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
+        body { font-family: Arial; background: #f0f2f5; }
+        .container { max-width: 800px; margin: 40px auto; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        textarea, input { width: 100%; margin-top: 10px; padding: 10px; }
+        button { margin-top: 10px; padding: 8px 16px; }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <h1 onclick="window.location.href='/dashboard.html'">SeniorConnect</h1>
-    <span id="username" style="color:#555; font-size:14px;"></span>
-</nav>
-
 <div class="container">
-    <h2>Q&A Forum</h2>
-    <p class="subtitle">Ask questions and get answers from the community.</p>
 
-    <div class="ask-form">
-        <h3>Ask a Question</h3>
-        <input type="text" id="title" placeholder="Question title (e.g. How to prepare for Google interviews?)" />
-        <textarea id="body" placeholder="Describe your question in detail..."></textarea>
-        <button class="post-btn" onclick="postQuestion()">Post Question</button>
+    <h2>Forum</h2>
+
+    <!-- Ask Question -->
+    <div class="card">
+        <input id="title" placeholder="Title">
+        <textarea id="body" placeholder="Your question"></textarea>
+        <button onclick="postQuestion()">Post</button>
     </div>
 
-    <div class="questions-list" id="questions-list">
-        <div class="empty">Loading questions...</div>
-    </div>
+    <!-- Questions -->
+    <div id="questions"></div>
+
 </div>
 
 <script>
     const BASE = window.location.origin;
     const userId = localStorage.getItem("userId");
-    const name = localStorage.getItem("name");
-
-    if (!userId) window.location.href = "/index.html";
-    document.getElementById("username").innerText = name;
 
     async function loadQuestions() {
-        const response = await fetch(`${BASE}/api/forum/questions`);
-        const questions = await response.json();
+        const res = await fetch(`${BASE}/api/forum/questions`);
+        const data = await res.json();
 
-        const list = document.getElementById("questions-list");
+        const container = document.getElementById("questions");
+        container.innerHTML = "";
 
-        if (questions.length === 0) {
-            list.innerHTML = '<div class="empty">No questions yet — be the first to ask!</div>';
-            return;
-        }
-
-        list.innerHTML = "";
-        questions.forEach(q => {
+        data.forEach(q => {
             const card = document.createElement("div");
-            card.className = "question-card";
+            card.className = "card";
+
             card.innerHTML = `
-                <div class="question-title">${q.title}</div>
-                <div class="question-body">${q.body}</div>
-                <div class="question-meta">Asked by ${q.askedBy.name} · ${new Date(q.createdAt).toLocaleDateString()}</div>
-            `;
-            list.appendChild(card);
+            <h3>${q.title}</h3>
+            <p>${q.body}</p>
+            <small>By ${q.askedBy.name}</small>
+
+            <div id="answers-${q.id}">Loading answers...</div>
+
+            <textarea id="answer-${q.id}" placeholder="Write answer"></textarea>
+            <button onclick="postAnswer(${q.id})">Answer</button>
+        `;
+
+            container.appendChild(card);
+            loadAnswers(q.id);
         });
     }
 
-    async function postQuestion() {
-        const title = document.getElementById("title").value.trim();
-        const body = document.getElementById("body").value.trim();
+    async function loadAnswers(id) {
+        const res = await fetch(`${BASE}/api/answers/${id}`);
+        const data = await res.json();
 
-        if (!title || !body) {
-            alert("Please fill in both the title and description.");
+        const div = document.getElementById(`answers-${id}`);
+
+        if (data.length === 0) {
+            div.innerHTML = "<p>No answers yet</p>";
             return;
         }
 
-        const response = await fetch(`${BASE}/api/forum/ask`,  {
+        div.innerHTML = data.map(a => `
+        <p><b>${a.user.name}:</b> ${a.content}</p>
+    `).join("");
+    }
+
+    async function postQuestion() {
+        const title = document.getElementById("title").value;
+        const body = document.getElementById("body").value;
+
+        if (!title || !body) {
+            alert("Fill everything");
+            return;
+        }
+
+        await fetch(`${BASE}/api/forum/ask`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("token")
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, title, body })
         });
 
-        if (response.ok) {
-            document.getElementById("title").value = "";
-            document.getElementById("body").value = "";
-            loadQuestions();
-        } else {
-            alert("Something went wrong. Please try again.");
+        document.getElementById("title").value = "";
+        document.getElementById("body").value = "";
+
+        loadQuestions();
+    }
+
+    async function postAnswer(id) {
+        const content = document.getElementById(`answer-${id}`).value;
+
+        if (!content) {
+            alert("Write something");
+            return;
         }
+
+        await fetch(`${BASE}/api/answers`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                questionId: id,
+                userId,
+                content
+            })
+        });
+
+        document.getElementById(`answer-${id}`).value = "";
+        loadAnswers(id);
     }
 
     loadQuestions();

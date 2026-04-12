@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Your Mentors</h2>
+<div id="list"></div>
+
+<script>
+    const BASE = window.location.origin;
+    const userId = localStorage.getItem("userId");
+
+    async function load() {
+        const res = await fetch(`${BASE}/api/mentorship/accepted/${userId}`);
+        const data = await res.json();
+
+        const list = document.getElementById("list");
+
+        if (data.length === 0) {
+            list.innerHTML = "<p>No mentors yet</p>";
+            return;
+        }
+
+        list.innerHTML = data.map(r => `
+        <div style="margin-bottom:20px;">
+            <b>${r.senior.name}</b><br>
+            <button onclick="openChat(${r.senior.id})">Chat</button>
+        </div>
+    `).join("");
+    }
+
+    function openChat(seniorId) {
+        window.location.href = `/chat.html?user=${seniorId}`;
+    }
+
+    load();
+</script>
+
+</body>
+</html>
