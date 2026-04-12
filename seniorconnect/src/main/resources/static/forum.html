@@ -56,6 +56,7 @@
 </div>
 
 <script>
+    const BASE = window.location.origin;
     const userId = localStorage.getItem("userId");
     const name = localStorage.getItem("name");
 
@@ -63,7 +64,7 @@
     document.getElementById("username").innerText = name;
 
     async function loadQuestions() {
-        const response = await fetch("http://localhost:8080/api/forum/questions");
+        const response = await fetch(`${BASE}/api/forum/questions`);
         const questions = await response.json();
 
         const list = document.getElementById("questions-list");
@@ -95,7 +96,7 @@
             return;
         }
 
-        const response = await fetch("http://localhost:8080/api/forum/ask", {
+        const response = await fetch(`${BASE}/api/forum/ask`,  {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, title, body })
