@@ -54,14 +54,20 @@ public class SeniorProfileController {
         return ResponseEntity.ok(profileRepository.findAll());
     }
     @GetMapping("/profile")
-    public Map<String, Object> getProfile() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", "hello");
-        data.put("role", "SENIOR");
-        data.put("company", "Google");
-        data.put("domain", "Backend");
-        data.put("branch", "Computer Science");
-        data.put("cgpa", 8.5);
-        return data;
+    public ResponseEntity<?> getProfile(@RequestParam String email) {
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        SeniorProfile profile = profileRepository.findByUser(user).orElse(null);
+
+        if (profile == null) {
+            return ResponseEntity.status(404).body("Profile not found");
+        }
+
+        return ResponseEntity.ok(profile);
     }
 }

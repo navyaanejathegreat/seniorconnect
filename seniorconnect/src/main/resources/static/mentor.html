@@ -5,12 +5,6 @@
     <title>Request Mentor - SeniorConnect</title>
     <link rel="stylesheet" href="/style.css">
 
-    <script>
-        if (localStorage.getItem("mode") === "dark") {
-            document.documentElement.classList.add("dark");
-        }
-    </script>
-
 </head>
 
 <body>
@@ -35,7 +29,6 @@
             Logout
         </button>
 
-        <span class="toggle" onclick="toggleMode()">🌙</span>
     </div>
 </div>
 
@@ -78,7 +71,7 @@
 
     /* LOAD SENIORS */
     async function loadSeniors() {
-        const res = await fetch(`${BASE}/api/profiles`);
+        const res = await fetch(`${BASE}/api`);
         const seniors = await res.json();
 
         const list = document.getElementById("senior-list");

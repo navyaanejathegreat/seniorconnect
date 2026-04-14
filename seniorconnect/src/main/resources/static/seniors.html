@@ -4,18 +4,8 @@
     <meta charset="UTF-8">
     <title>Find a Senior - SeniorConnect</title>
     <link rel="stylesheet" href="/style.css">
-    <script>
-        if (localStorage.getItem("mode") === "dark") {
-            document.documentElement.classList.add("dark");
-        }
-    </script>
 </head>
-<script>
-    // Apply saved mode BEFORE rendering (no flicker)
-    if (localStorage.getItem("mode") === "dark") {
-        document.documentElement.classList.add("dark");
-    }
-</script>
+
 <body>
 
 
@@ -28,7 +18,7 @@
     <div class="right">
         <div class="user-info">
             <div class="name" id="username">User</div>
-            <div class="role">SENIOR</div>
+            <div class="role"id="role">User</div>
         </div>
 
         <button class="btn profile" onclick="window.location.href='/profile.html'">
@@ -39,7 +29,7 @@
             Logout
         </button>
 
-        <span class="toggle" onclick="toggleMode()">🌙</span>
+
     </div>
 </div>
 
@@ -71,12 +61,15 @@
 <script>
     const BASE = window.location.origin;
     const name = localStorage.getItem("name");
+    const  role= localStorage.getItem("role");
+
     if (!name) window.location.href = "/index.html";
     document.getElementById("username").innerText = name;
 
+
     /* LOAD SENIORS */
     async function loadSeniors(company="", domain="") {
-        let url = `${BASE}/api/profiles?`;
+        let url = `${BASE}/api?`;
         if (company) url += `company=${encodeURIComponent(company)}&`;
         if (domain) url += `domain=${encodeURIComponent(domain)}`;
 
@@ -137,10 +130,6 @@
     }
 
 
-
-    if(localStorage.getItem("mode")==="dark"){
-        document.body.classList.add("dark");
-    }
 
     function logout(){
         localStorage.clear();

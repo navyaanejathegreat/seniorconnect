@@ -14,8 +14,8 @@
 
     <div class="right">
         <div class="user-info">
-            <div class="name" id="nav-name">hello</div>
-            <div class="role" id="nav-role">SENIOR</div>
+            <div class="name" id="nav-name"></div>
+            <div class="role" id="nav-role"></div>
         </div>
 
         <button class="btn profile" onclick="location.href='profile.html'">Profile</button>
@@ -105,9 +105,19 @@
             document.getElementById("year").innerText = data.placementYear;
             document.getElementById("bio").innerText = data.bio;
 
-        } catch (err) {
+        }
+        catch (err) {
             console.error(err);
-            document.getElementById("name").innerText = "Failed to load profile";
+
+            // 👇 fallback from localStorage
+            const name = localStorage.getItem("name");
+            const role = localStorage.getItem("role");
+
+            document.getElementById("name").innerText = name || "No Name";
+            document.getElementById("role").innerText = role || "Role";
+
+            document.getElementById("nav-name").innerText = name || "User";
+            document.getElementById("nav-role").innerText = role || "";
         }
     }
 
@@ -117,6 +127,13 @@
 
     loadProfile();
 
+</script>
+<script>
+    const name = localStorage.getItem("name");
+    const role = localStorage.getItem("role");
+
+    document.getElementById("nav-name").innerText = name || "User";
+    document.getElementById("nav-role").innerText = role || "";
 </script>
 
 </body>
