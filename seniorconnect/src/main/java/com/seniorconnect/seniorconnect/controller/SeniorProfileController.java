@@ -48,17 +48,19 @@ public class SeniorProfileController {
 
         if (company != null) {
             return ResponseEntity.ok(
-                    profileRepository.findByUserRoleAndCompanyContainingIgnoreCase("SENIOR", company)
+                    profileRepository.findByUser_RoleAndCompanyContainingIgnoreCase(User.Role.SENIOR, company)
             );
         }
 
         if (domain != null) {
             return ResponseEntity.ok(
-                    profileRepository.findByUserRoleAndDomainContainingIgnoreCase("SENIOR", domain)
+                    profileRepository.findByUser_RoleAndDomainContainingIgnoreCase(User.Role.SENIOR, domain)
             );
         }
 
-        return ResponseEntity.ok(profileRepository.findByUserRole("SENIOR"));
+        return ResponseEntity.ok(
+                profileRepository.findByUser_Role(User.Role.SENIOR)
+        );
     }
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@RequestParam String email) {
