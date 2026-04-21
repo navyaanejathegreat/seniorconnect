@@ -97,6 +97,7 @@
             localStorage.setItem("name", data.name);
             localStorage.setItem("userId", data.id);
             localStorage.setItem("token", data.token);
+            localStorage.setItem("email", body.email); // ← THIS WAS MISSING
             window.location.href = "/dashboard.html";
         } else {
             document.getElementById("message").innerText = data.message || "Login failed.";
