@@ -86,7 +86,9 @@
 
     async function loadProfile() {
         try {
-            const res = await fetch("/api/profile"); // backend endpoint
+            const email = localStorage.getItem("email");
+
+            const res = await fetch(`/api/profile?email=${encodeURIComponent(email)}`);
             if (!res.ok) throw new Error("Failed to fetch");
 
             const data = await res.json();
