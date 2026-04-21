@@ -29,7 +29,7 @@ public class SeniorProfileController {
         SeniorProfile profile = new SeniorProfile();
         profile.setUser(user);
         profile.setCompany(req.get("company"));
-        profile.setRole(req.get("role"));
+        profile.setRole(user.getRole().name());
         profile.setDomain(req.get("domain"));
         profile.setCgpa(Float.parseFloat(req.get("cgpa")));
         profile.setBranch(req.get("branch"));
@@ -46,12 +46,19 @@ public class SeniorProfileController {
             @RequestParam(required = false) String company,
             @RequestParam(required = false) String domain) {
 
-        if (company != null)
-            return ResponseEntity.ok(profileRepository.findByCompanyContainingIgnoreCase(company));
-        if (domain != null)
-            return ResponseEntity.ok(profileRepository.findByDomainContainingIgnoreCase(domain));
+        if (company != null) {
+            return ResponseEntity.ok(
+                    profileRepository.findByUserRoleAndCompanyContainingIgnoreCase("SENIOR", company)
+            );
+        }
 
-        return ResponseEntity.ok(profileRepository.findAll());
+        if (domain != null) {
+            return ResponseEntity.ok(
+                    profileRepository.findByUserRoleAndDomainContainingIgnoreCase("SENIOR", domain)
+            );
+        }
+
+        return ResponseEntity.ok(profileRepository.findByUserRole("SENIOR"));
     }
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@RequestParam String email) {

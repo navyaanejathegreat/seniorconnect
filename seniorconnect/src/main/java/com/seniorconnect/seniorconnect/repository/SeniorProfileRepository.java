@@ -9,6 +9,11 @@ import java.util.Optional;
 public interface SeniorProfileRepository extends JpaRepository<SeniorProfile, Long> {
     List<SeniorProfile> findByCompanyContainingIgnoreCase(String company);
     List<SeniorProfile> findByDomainContainingIgnoreCase(String domain);
+    List<SeniorProfile> findByUserRole(String role);
+
+    List<SeniorProfile> findByUserRoleAndCompanyContainingIgnoreCase(String role, String company);
+
+    List<SeniorProfile> findByUserRoleAndDomainContainingIgnoreCase(String role, String domain);
     Optional<SeniorProfile> findByUserId(Long userId);
     Optional<SeniorProfile> findByUser(User user);
 }
